@@ -1,12 +1,23 @@
-import Data.List
-import Data.HashSet (HashSet)
-import qualified Data.HashSet as HashSet
+isPrime :: Int -> Bool
+isPrime n
+  | n <= 1 = False
+  | otherwise = all (\i -> n `mod` i /= 0) [2..isqrt n]
+  where isqrt = floor . sqrt . fromIntegral
 
 main :: IO ()
 main = do
-  let text = ["_._ ..", "_._ ..", "=", "2"]
-  let uniqueTextCount = repac text 4
-  putStrLn $ "Количество уникальных слов на азбуке Морзе: " ++ show uniqueTextCount
+  putStrLn "Введите числа (для завершения введите отрицательное число):"
+  numbers <- getNumbers []
+  putStrLn "Результаты проверки чисел на простоту:"
+  mapM_ (\number -> if isPrime number then putStrLn (show number ++ " - простое число") else putStrLn (show number ++ " - не является простым числом")) numbers
 
-repac :: [String] -> Int -> Int
-repac text size = HashSet.size $ foldl' (\uniqueText word -> HashSet.insert (sort word) uniqueText) HashSet.empty text
+getNumbers :: [Int] -> IO [Int]
+getNumbers acc = do
+  num <- readLn :: IO Int
+  if num < 0
+    then return (reverse acc)
+    else if num > 0
+      then getNumbers (num : acc)
+      else do
+        putStrLn "Нужно вводить только числа:"
+        return []
