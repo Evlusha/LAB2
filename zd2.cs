@@ -11,7 +11,7 @@ class Program
     };
 
     static Dictionary<char, string> charToMorse = new Dictionary<char, string>();
-
+    // 
     static void InitCharToMorseMap()
     {
         for (char c = 'a'; c <= 'z'; ++c)
@@ -19,7 +19,7 @@ class Program
             charToMorse[c] = morseAlphabet[c - 'a'];
         }
     }
-
+    //рекурсивно генерацует различных комбинаций 
     static void GeneratePermutations(string str, int l, int r, HashSet<string> permutations)
     {
         if (l == r)
@@ -36,6 +36,7 @@ class Program
             }
         }
     }
+ //функцию которая принимает строку str и индексы i и j обменивая символы с соответствующими индексами в строке. 
 
     static string Swap(string str, int i, int j)
     {
