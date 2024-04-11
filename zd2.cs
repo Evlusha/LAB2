@@ -1,36 +1,77 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace Lab2_ZD1
+class Program
 {
-    internal class zd2
+    static List<string> morseAlphabet = new List<string>
     {
+        ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---",
+        ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."
+    };
 
-        static void Main2()
+    static Dictionary<char, string> charToMorse = new Dictionary<char, string>();
+
+    static void InitCharToMorseMap()
+    {
+        for (char c = 'a'; c <= 'z'; ++c)
         {
-  
-            string[] text = { "1", "2", "3", "2" };
-            int uniqueTextCount = Repac(text);
-            Console.WriteLine("Количество уникальных слов на азбуке Морзе: " + uniqueTextCount);
+            charToMorse[c] = morseAlphabet[c - 'a'];
         }
+    }
 
-        static int Repac(string[] text)
+    static void GeneratePermutations(string str, int l, int r, HashSet<string> permutations)
+    {
+        if (l == r)
         {
-            HashSet<string> uniqueText = new HashSet<string>();// хранения уникальных строк
-
-            foreach (var word in text) //итерация по каждому элементу word в массиве text.
+            permutations.Add(str);
+        }
+        else
+        {
+            for (int i = l; i <= r; i++)
             {
-                char[] morseChars = word.ToCharArray();
-                Array.Sort(morseChars); //сортируются по алфавиту с помощью метода Array.Sort(). //	Копирует знаки из указанной подстроки данного экземпляра в массив знаков Юникода.
-                string normalizedWord = new string(morseChars);// Отсортированные символы объединяются обратно в строку с помощью конструктора new string(morseChars), и результат сохраняется в переменную normalizedWord.
-                uniqueText.Add(normalizedWord);//добавляется в HashSet uniqueText с помощью метода Add()
+                str = Swap(str, l, i);
+                GeneratePermutations(str, l + 1, r, permutations);
+                str = Swap(str, l, i);
             }
+        }
+    }
 
-            return uniqueText.Count;
+    static string Swap(string str, int i, int j)
+    {
+        char[] charArray = str.ToCharArray();
+        char temp = charArray[i];
+        charArray[i] = charArray[j];
+        charArray[j] = temp;
+        return new string(charArray);
+    }
+
+    static string StringToMorse(string str)
+    {
+        string morseString = "";
+        foreach (char c in str)
+        {
+            morseString += charToMorse[c];
+        }
+        return morseString;
+    }
+
+    static void Main()
+    {
+        InitCharToMorseMap();
+        Console.WriteLine("Введите буквы для перестановки: ");
+        string input = Console.ReadLine();
+        HashSet<string> permutations = new HashSet<string>();
+        GeneratePermutations(input, 0, input.Length - 1, permutations);
+        HashSet<string> uniqueMorseWords = new HashSet<string>();
+        foreach (var word in permutations)
+        {
+            uniqueMorseWords.Add(StringToMorse(word));
+        }
+        Console.WriteLine("Уникальные слова в языке Морзе: ");
+        foreach (var morseWord in uniqueMorseWords)
+        {
+            Console.Write(morseWord + "|| ");
         }
     }
 }
