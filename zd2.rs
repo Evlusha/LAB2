@@ -1,24 +1,52 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
+
+const MORSE_ALPHABET: [&str; 26] = [
+    ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.",
+    "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."
+];
+
+fn init_char_to_morse_map() -> HashMap<char, String> {
+    let mut char_to_morse: HashMap<char, String> = HashMap::new();
+    for (i, c) in ('a'..='z').enumerate() {
+        char_to_morse.insert(c, MORSE_ALPHABET[i].to_string());
+    }
+    char_to_morse
+}
+
+fn generate_permutations(str: &mut Vec<char>, l: usize, r: usize, permutations: &mut HashSet<String>) {
+    if l == r {
+        permutations.insert(str.iter().collect());
+    } else {
+        for i in l..=r {
+            str.swap(l, i);
+            generate_permutations(str, l + 1, r, permutations);
+            str.swap(l, i);
+        }
+    }
+}
+
+fn string_to_morse(str: &str, char_to_morse: &HashMap<char, String>) -> String {
+    str.chars().map(|c| char_to_morse[&c].clone()).collect()
+}
 
 fn main() {
-    Main2();
-}
+    let char_to_morse = init_char_to_morse_map();
+    let mut input = String::new();
+    println!("Введите буквы для перестановки: ");
+    std::io::stdin().read_line(&mut input).expect("Failed to read line");
+    let input = input.trim().to_lowercase();
 
-fn Main2() {
-    let text = ["_._ ..", "_._ ..", "2", "_._ .."];
-    let unique_text_count = repac(&text);
-    println!("Количество уникальных слов на азбуке Морзе: {}", unique_text_count);
-}
+    let mut input_chars: Vec<char> = input.chars().collect();
+    let mut permutations: HashSet<String> = HashSet::new();
+    generate_permutations(&mut input_chars, 0, input_chars.len() - 1, &mut permutations);
 
-fn repac(text: &[&str]) -> usize {
-    let mut unique_text: HashSet<String> = HashSet::new();
-    for word in text {
-        let mut sorted_word = word.chars().filter(|c| c.is_alphabetic()).collect::<String>();
-        sorted_word.make_ascii_lowercase();
-        let mut sorted_chars: Vec<char> = sorted_word.chars().collect();
-        sorted_chars.sort();
-        let sorted_word = sorted_chars.iter().collect();
-        unique_text.insert(sorted_word);
+    let mut unique_morse_words: HashSet<String> = HashSet::new();
+    for word in permutations.iter() {
+        unique_morse_words.insert(string_to_morse(word, &char_to_morse));
     }
-    unique_text.len()
+
+    println!("Уникальные слова в языке Морзе: ");
+    for morse_word in unique_morse_words.iter() {
+        print!("{}|| ", morse_word);
+    }
 }
