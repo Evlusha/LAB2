@@ -5,27 +5,62 @@ import (
 	"sort"
 )
 
-type zd2 struct{}
-
-func (zd2) Main2() {
-	text := []string{"aaas", "aaas", "3", "2"}
-	uniqueTextCount := Repac(text, 4)
-	fmt.Println("Количество уникальных слов на азбуке Морзе:", uniqueTextCount)
+var morseAlphabet = []string{
+	".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---",
+	".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--..",
 }
 
-func Repac(text []string, size int) int {
-	uniqueText := make(map[string]struct{})
-	for i := 0; i < size; i++ {
-		word := text[i]
-		wordBytes := []byte(word)
-		sort.Slice(wordBytes, func(i, j int) bool {
-			return wordBytes[i] < wordBytes[j]
-		})
-		uniqueText[string(wordBytes)] = struct{}{}
+var charToMorse map[rune]string
+
+func initCharToMorseMap() {
+	charToMorse = make(map[rune]string)
+	for i, c := 'a', 0; i <= 'z'; i, c = i+1, c+1 {
+		charToMorse[i] = morseAlphabet[c]
 	}
-	return len(uniqueText)
+}
+
+func generatePermutations(str []rune, l, r int, permutations *map[string]struct{}) {
+	if l == r {
+		(*permutations)[string(str)] = struct{}{}
+	} else {
+		for i := l; i <= r; i++ {
+			str[l], str[i] = str[i], str[l]
+			generatePermutations(str, l+1, r, permutations)
+			str[l], str[i] = str[i], str[l]
+		}
+	}
+}
+
+func stringToMorse(str string) string {
+	morseString := ""
+	for _, c := range str {
+		morseString += charToMorse[c]
+	}
+	return morseString
 }
 
 func main() {
-	zd2{}.Main2()
+	initCharToMorseMap()
+	var input string
+	fmt.Print("Введите буквы для перестановки: ")
+	fmt.Scan(&input)
+
+	permutations := make(map[string]struct{})
+	generatePermutations([]rune(input), 0, len(input)-1, &permutations)
+
+	uniqueMorseWords := make(map[string]struct{})
+	for word := range permutations {
+		uniqueMorseWords[stringToMorse(word)] = struct{}{}
+	}
+
+	var keys []string
+	for k := range uniqueMorseWords {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	fmt.Print("Уникальные слова в языке Морзе: ")
+	for _, morseWord := range keys {
+		fmt.Print(morseWord, "|| ")
+	}
 }
