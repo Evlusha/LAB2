@@ -1,19 +1,20 @@
-import collections
+import itertools
 
-class zd2:
-    @staticmethod
-    def Main2():
-        text = ["qaq", "._. ", "3", "2"]
-        uniqueTextCount = zd2.Repac(text, 4)
-        print("Количество уникальных слов на азбуке Морзе:", uniqueTextCount)
+morseAlphabet = [".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---",
+                  ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."]
 
-    @staticmethod
-    def Repac(text, size):
-        uniqueText = set()
-        for i in range(size):
-            word = text[i]
-            sorted_word = ''.join(sorted(word))
-            uniqueText.add(sorted_word)
-        return len(uniqueText)
+charToMorse = {chr(ord('a') + i): morseAlphabet[i] for i in range(26)}
 
-zd2.Main2()
+def generatePermutations(input_str):
+    permutations = set(''.join(p) for p in itertools.permutations(input_str))
+    return permutations
+
+def stringToMorse(input_str):
+    morse_string = ''.join(charToMorse[c] for c in input_str)
+    return morse_string
+
+input_str = input("Введите буквы для перестановки: ")
+permutations = generatePermutations(input_str)
+unique_morse_words = {stringToMorse(word) for word in permutations}
+
+print("Уникальные слова в языке Морзе:", "||".join(unique_morse_words))
