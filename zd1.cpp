@@ -12,11 +12,11 @@ namespace LAB2 {
             cout << "Введите текст" << endl;
             string text;
             getline(cin, text);
-
+                        //Он сканирует строку `text` и заменяет любую последовательность из трех одинаковых символов случайным символом.
             for (int i = 0; i < text.length() - 2; i++) {
                 if (text[i] == text[i + 1] && text[i + 1] == text[i + 2]) {
                     text.erase(i + 2, 1);
-                    text.insert(i + 2, 1, RandomChar());
+                    text.insert(i + 2, 1, RandomChar()); 
                 }
             }
 
