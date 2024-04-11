@@ -1,32 +1,77 @@
-﻿using System;
-using System.IO;
-using System.Reflection.Metadata.Ecma335;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace LAB2
+class Program
 {
-    public class StringValidator
+    static List<string> morseAlphabet = new List<string>
     {
-        static void Main()
+        ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---",
+        ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."
+    };
+
+    static Dictionary<char, string> charToMorse = new Dictionary<char, string>();
+
+    static void InitCharToMorseMap()
+    {
+        for (char c = 'a'; c <= 'z'; ++c)
         {
-            Console.WriteLine("Введите текст");
-            string text = Console.ReadLine();
-
-            for (int i = 0; i < text.Length - 2; i++)
-            {
-                if (text[i] == text[i + 1] && text[i + 1] == text[i + 2])
-                {
-                    text = text.Remove(i + 2, 1).Insert(i + 2, Convert.ToString(RandomChar()));
-                }
-            }
-
-            Console.WriteLine(text);
+            charToMorse[c] = morseAlphabet[c - 'a'];
         }
+    }
 
-        static char RandomChar()
+    static void GeneratePermutations(string str, int l, int r, HashSet<string> permutations)
+    {
+        if (l == r)
         {
-            Random random = new Random();
-            char[] chars = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
-            return chars[random.Next(chars.Length)];
+            permutations.Add(str);
+        }
+        else
+        {
+            for (int i = l; i <= r; i++)
+            {
+                str = Swap(str, l, i);
+                GeneratePermutations(str, l + 1, r, permutations);
+                str = Swap(str, l, i);
+            }
+        }
+    }
+
+    static string Swap(string str, int i, int j)
+    {
+        char[] charArray = str.ToCharArray();
+        char temp = charArray[i];
+        charArray[i] = charArray[j];
+        charArray[j] = temp;
+        return new string(charArray);
+    }
+
+    static string StringToMorse(string str)
+    {
+        string morseString = "";
+        foreach (char c in str)
+        {
+            morseString += charToMorse[c];
+        }
+        return morseString;
+    }
+
+    static void Main()
+    {
+        InitCharToMorseMap();
+        Console.WriteLine("Введите буквы для перестановки: ");
+        string input = Console.ReadLine();
+        HashSet<string> permutations = new HashSet<string>();
+        GeneratePermutations(input, 0, input.Length - 1, permutations);
+        HashSet<string> uniqueMorseWords = new HashSet<string>();
+        foreach (var word in permutations)
+        {
+            uniqueMorseWords.Add(StringToMorse(word));
+        }
+        Console.WriteLine("Уникальные слова в языке Морзе: ");
+        foreach (var morseWord in uniqueMorseWords)
+        {
+            Console.Write(morseWord + "|| ");
         }
     }
 }
