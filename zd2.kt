@@ -1,22 +1,43 @@
 import java.util.*
 
-class Zd2 {
-    companion object {
-        @JvmStatic
-        fun main(args: Array<String>) {
-            val text = arrayOf("qaq", "._. ._.", "._. ", "2")
-            val uniqueTextCount = repac(text, 4)
-            println("Количество уникальных слов на азбуке Морзе: $uniqueTextCount")
-        }
+val morseAlphabet = listOf(
+    ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---",
+    ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."
+)
 
-        fun repac(text: Array<String>, size: Int): Int {
-            val uniqueText = HashSet<String>()
-            for (i in 0 until size) {
-                var word = text[i]
-                word = word.toCharArray().sorted().joinToString("")
-                uniqueText.add(word)
-            }
-            return uniqueText.size
+val charToMorse: MutableMap<Char, String> = mutableMapOf()
+
+fun initCharToMorseMap() {
+    for (c in 'a'..'z') {
+        charToMorse[c] = morseAlphabet[c - 'a']
+    }
+}
+
+fun generatePermutations(str: String, l: Int, r: Int, permutations: MutableSet<String>) {
+    if (l == r) {
+        permutations.add(str)
+    } else {
+        for (i in l..r) {
+            val charArray = str.toCharArray()
+            charArray[l] = str[i].also { charArray[i] = str[l] }
+            generatePermutations(String(charArray), l + 1, r, permutations)
         }
     }
+}
+
+fun stringToMorse(str: String): String {
+    var morseString = ""
+    for (c in str) {
+        morseString += charToMorse[c]
+    }
+    return morseString
+}
+
+fun main() {
+    initCharToMorseMap()
+    val input = readLine() ?: ""
+    val permutations = mutableSetOf<String>()
+    generatePermutations(input, 0, input.length - 1, permutations)
+    val uniqueMorseWords = permutations.map { stringToMorse(it) }.toSet()
+    println("Уникальные слова в языке Морзе: ${uniqueMorseWords.joinToString("|| ")}")
 }
