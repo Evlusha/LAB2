@@ -58,9 +58,9 @@ isProst:
     jle .check_loop      ; Повторяем, если делитель меньше числа
 
 .prime:
-    mov al, 1           ; Возвращаем 1, если число простое
+    mov al, 1           
     ret
 
 .not_prime:
-    xor al, al          ; Возвращаем 0, если число не простое
+    xor al, 0         
     ret
