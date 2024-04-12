@@ -15,7 +15,7 @@ namespace LAB2
             {
                 if (text[i] == text[i + 1] && text[i + 1] == text[i + 2])
                 {
-                    text = text.Remove(i + 2, 1).Insert(i + 2, Convert.ToString(RandomChar()));
+                    text = text.Insert(i + 2, Convert.ToString(RandomChar()));
                 }
             }
 
