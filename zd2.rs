@@ -2,6 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::io::{self, Write};
 
 fn main() {
+    // КОМПИЛИРОВАТЬ ТУТ !!! https://www.mycompiler.io/new/rust
     // Создаем словарь, сопоставляющий буквы алфавита с их представлением в коде Морзе
     let morse_alphabet: HashMap<char, &'static str> = [
         ('a', ".-"), ('b', "-..."), ('c', "-.-."), ('d', "-.."), ('e', "."), ('f', "..-."), ('g', "--."),
