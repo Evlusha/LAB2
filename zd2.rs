@@ -1,52 +1,42 @@
 use std::collections::{HashMap, HashSet};
-
-const MORSE_ALPHABET: [&str; 26] = [
-    ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.",
-    "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."
-];
-
-fn init_char_to_morse_map() -> HashMap<char, String> {
-    let mut char_to_morse: HashMap<char, String> = HashMap::new();
-    for (i, c) in ('a'..='z').enumerate() {
-        char_to_morse.insert(c, MORSE_ALPHABET[i].to_string());
-    }
-    char_to_morse
-}
-
-fn generate_permutations(str: &mut Vec<char>, l: usize, r: usize, permutations: &mut HashSet<String>) {
-    if l == r {
-        permutations.insert(str.iter().collect());
-    } else {
-        for i in l..=r {
-            str.swap(l, i);
-            generate_permutations(str, l + 1, r, permutations);
-            str.swap(l, i);
-        }
-    }
-}
-
-fn string_to_morse(str: &str, char_to_morse: &HashMap<char, String>) -> String {
-    str.chars().map(|c| char_to_morse[&c].clone()).collect()
-}
+use std::io::{self, Write};
 
 fn main() {
-    let char_to_morse = init_char_to_morse_map();
+    // Создаем словарь, сопоставляющий буквы алфавита с их представлением в коде Морзе
+    let morse_alphabet: HashMap<char, &'static str> = [
+        ('a', ".-"), ('b', "-..."), ('c', "-.-."), ('d', "-.."), ('e', "."), ('f', "..-."), ('g', "--."),
+        ('h', "...."), ('i', ".."), ('j', ".---"), ('k', "-.-"), ('l', ".-.."), ('m', "--"), ('n', "-."),
+        ('o', "---"), ('p', ".--."), ('q', "--.-"), ('r', ".-."), ('s', "..."), ('t', "-"), ('u', "..-"),
+        ('v', "...-"), ('w', ".--"), ('x', "-..-"), ('y', "-.--"), ('z', "--.."),
+    ].iter().cloned().collect();
+
+    // Получаем ввод от пользователя
+    println!("Введите слова через пробел: ");
+    io::stdout().flush().unwrap();
     let mut input = String::new();
-    println!("Введите буквы для перестановки: ");
-    std::io::stdin().read_line(&mut input).expect("Failed to read line");
+    io::stdin().read_line(&mut input).expect("Ошибка при чтении ввода");
+
+    // Убираем лишние символы и преобразуем к нижнему регистру
     let input = input.trim().to_lowercase();
 
-    let mut input_chars: Vec<char> = input.chars().collect();
-    let mut permutations: HashSet<String> = HashSet::new();
-    generate_permutations(&mut input_chars, 0, input_chars.len() - 1, &mut permutations);
+    // Разбиваем строку на слова
+    let words: Vec<&str> = input.split_whitespace().collect();
 
-    let mut unique_morse_words: HashSet<String> = HashSet::new();
-    for word in permutations.iter() {
-        unique_morse_words.insert(string_to_morse(word, &char_to_morse));
+    // Создаем множество для хранения уникальных слов на азбуке Морзе
+    let mut unique_morse_words = HashSet::new();
+
+    // Перебираем слова и преобразуем их в код Морзе, добавляем в множество
+    for word in words {
+        let morse_word = word.chars()
+            .map(|c| morse_alphabet[&c])
+            .collect::<Vec<&str>>()
+            .join("");
+        unique_morse_words.insert(morse_word);
     }
 
-    println!("Уникальные слова в языке Морзе: ");
+    // Выводим уникальные слова на азбуке Морзе
+    println!("Уникальные слова на азбуке Морзе: ");
     for morse_word in unique_morse_words.iter() {
-        print!("{}|| ", morse_word);
+        println!("{}", morse_word);
     }
 }
